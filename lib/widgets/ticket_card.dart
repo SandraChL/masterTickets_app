@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../screens/ticket_detail.dart';
 import '../utils/colors.dart';
 
 class TicketCard extends StatefulWidget {
@@ -161,17 +162,60 @@ class _TicketCardState extends State<TicketCard>
                     clipper: WaveClipper(progress: _animation.value),
                     child: Container(
                       padding: const EdgeInsets.all(16),
-                      color: Colors.red.shade800,
-                      child: Center(
-                        child: Text(
-                          widget.description,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            height: 1.5,
+                      color: AppColors.aRed,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Texto descriptivo alineado a la izquierda
+                          Text(
+                            widget.description,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                            textAlign: TextAlign.left,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
+
+                          // Botón "Continuar"
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                // ignore: deprecated_member_use
+                                backgroundColor: Colors.black.withOpacity(0.2),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => TicketDetailPage(
+                                          title: widget.title,
+                                          price: widget.price,
+                                          description: widget.description,
+                                          image: widget.image,
+                                        ),
+                                  ),
+                                );
+                              },
+
+                              child: const Text(
+                                'Continuar',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );

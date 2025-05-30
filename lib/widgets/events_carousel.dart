@@ -109,7 +109,10 @@ class _FeaturedEventsCarouselState extends State<FeaturedEventsCarousel> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      
+                      border: Border.all(
+                        color: Colors.grey.shade300, // Puedes cambiar el color
+                        width: 1.5, // Grosor del borde
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +121,7 @@ class _FeaturedEventsCarouselState extends State<FeaturedEventsCarousel> {
                           borderRadius: BorderRadius.circular(12),
                           child: Image.asset(
                             event['image']!,
-                            height: 100,
+                            height: 120,
                             width: double.infinity,
                             fit: BoxFit.cover,
                           ),

@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AutoBanner(),
-            const SizedBox(height: 20),
+
             Image.asset(
               'assets/images/Flayer.jpeg',
               width: double.infinity,

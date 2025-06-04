@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               },
                               child: const Text(
-                                "You forgot your password?",
+                                " ",
                                 style: TextStyle(color: Colors.black),
                               ),
                             ),
@@ -142,21 +142,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          "Don't have account?",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "Subscribe",
-                            style: TextStyle(
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        // const Text(
+                        //   "Don't have account?",
+                        //   style: TextStyle(color: Colors.black),
+                        // ),
+                        // TextButton(
+                        //   onPressed: () {},
+                        //   child: const Text(
+                        //     "Subscribe",
+                        //     style: TextStyle(
+                        //       color: Colors.black,
+                        //       decoration: TextDecoration.underline,
+                        //       fontWeight: FontWeight.bold,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

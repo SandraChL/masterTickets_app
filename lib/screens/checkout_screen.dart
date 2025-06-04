@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/screens/home_screen.dart' show HomeScreen;
 
 import '../utils/colors.dart';
 
@@ -178,11 +179,18 @@ class CheckoutPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 minimumSize: const Size(double.infinity, 50),
               ),
-              onPressed: () {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('Pedido enviado')));
-              },
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('simulación de Pedido enviado')),
+                  );
+
+                  Future.delayed(const Duration(seconds: 2), () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
+                  });
+                },
               child: const Text(
                 'Realizar el pedido',
                 style: TextStyle(

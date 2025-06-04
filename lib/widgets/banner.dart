@@ -10,6 +10,8 @@ class AutoBanner extends StatefulWidget {
 
 class _AutoBannerState extends State<AutoBanner> {
   int _currentIndex = 0;
+  late Timer _timer;
+
   final List<String> _images = [
     'assets/images/Speeding.gif',
     'assets/images/Driving.gif',
@@ -19,12 +21,18 @@ class _AutoBannerState extends State<AutoBanner> {
   @override
   void initState() {
     super.initState();
-    // Cambia de GIF cada 4 segundos
-    Timer.periodic(const Duration(seconds: 4), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (!mounted) return;
       setState(() {
         _currentIndex = (_currentIndex + 1) % _images.length;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Cancelar el timer para evitar errores
+    super.dispose();
   }
 
   @override
@@ -40,30 +48,22 @@ class _AutoBannerState extends State<AutoBanner> {
           ),
           ClipRRect(
             child: Container(
-              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.5),
             ),
           ),
-
-          // Texto + imagen arriba
           Container(
             padding: const EdgeInsets.all(20),
             alignment: Alignment.topCenter,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               
-                // Imagen centrada arriba
                 Image.asset(
                   'assets/images/FastFurious.png',
                   height: 180,
                   width: 500,
                   fit: BoxFit.contain,
                 ),
-
                 const SizedBox(height: 10),
-
-                // Texto del evento
                 Text(
                   '¡EL EVENTO DEL AÑO!',
                   style: TextStyle(

@@ -82,22 +82,22 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ),
 
-          ListTile(
-            leading: const Icon(Icons.backpack_outlined),
-            title: const Text('Tus Eventos'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.app_registration),
-            title: const Text('Registro'),
-            onTap: () {},
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.backpack_outlined),
+          //   title: const Text('Tus Eventos'),
+          //   onTap: () {},
+          // ),
+          // ListTile(
+          //   leading: const Icon(Icons.app_registration),
+          //   title: const Text('Registro'),
+          //   onTap: () {},
+          // ),
 
-          ListTile(
-            leading: const Icon(Icons.help_outline),
-            title: const Text('Ayuda y soporte'),
-            onTap: () {},
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.help_outline),
+          //   title: const Text('Ayuda y soporte'),
+          //   onTap: () {},
+          // ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Finalizar la sesión'),

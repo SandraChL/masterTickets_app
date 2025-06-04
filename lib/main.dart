@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'models/cart.dart';
+import 'screens/checkout_screen.dart';
 import 'screens/login.dart';
 import 'widgets/splash_screen.dart';
 
@@ -22,8 +23,17 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => LoginScreen(),
+        '/checkout':
+            (context) => CheckoutPage(
+              cartItems: cart,
+              eventTitle: '',
+              eventDate: '',
+              eventLocation: '',
+              eventImage: '',
+            ),
+
         // '/register': (context) => const RegisterScreen(),
-       // '/form_booking': (context) => const FormBookingPage(),
+        // '/form_booking': (context) => const FormBookingPage(),
       },
     );
   }

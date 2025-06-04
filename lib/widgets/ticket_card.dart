@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../screens/ticket_detail.dart';
 import '../utils/colors.dart';
 
@@ -9,6 +8,8 @@ class TicketCard extends StatefulWidget {
   final String image;
   final bool isDiscount;
   final String description;
+  final bool showDetails;
+  final VoidCallback onTap;
 
   const TicketCard({
     super.key,
@@ -16,6 +17,8 @@ class TicketCard extends StatefulWidget {
     required this.price,
     required this.image,
     required this.description,
+    required this.showDetails,
+    required this.onTap,
     this.isDiscount = false,
   });
 
@@ -25,197 +28,215 @@ class TicketCard extends StatefulWidget {
 
 class _TicketCardState extends State<TicketCard>
     with SingleTickerProviderStateMixin {
-  bool showDetails = false;
+ // bool showDetails = false;
   late final AnimationController _controller;
   late final Animation<double> _animation;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-
+    _scrollController = ScrollController();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
 
-  void toggleDetails() {
-    setState(() {
-      showDetails = !showDetails;
-      if (showDetails) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
+  @override
+  void didUpdateWidget(covariant TicketCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.showDetails && !_controller.isCompleted) {
+      _controller.forward();
+    } else if (!widget.showDetails && !_controller.isDismissed) {
+      _controller.reverse();
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: toggleDetails,
+      onTap: widget.onTap,
       child: Stack(
-  children: [
-    Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            Image.asset(
-              widget.image,
-              height: 220,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-            Container(
-              height: 220,
-              width: double.infinity,
-              color: Colors.black.withOpacity(0.3),
-            ),
-            if (widget.isDiscount)
-              Positioned(
-                top: 12,
-                left: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.aRed,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'DESCUENTO',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
                 ),
-              ),
-            Positioned(
-              bottom: 12,
-              left: 12,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
                 children: [
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(blurRadius: 4, color: Colors.black),
-                      ],
-                    ),
+                  Image.asset(
+                    widget.image,
+                    height: 250,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '\$${widget.price} MXN',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      shadows: [
-                        Shadow(blurRadius: 4, color: Colors.black),
+                  Container(
+                    height: 250,
+                    width: double.infinity,
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                  if (widget.isDiscount)
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.aRed,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Text(
+                          'DESCUENTO',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(blurRadius: 4, color: Colors.black),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '\$${widget.price} MXN',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            shadows: [
+                              Shadow(blurRadius: 4, color: Colors.black),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    ),
+          ),
 
-    /// ✅ Barrido lateral con forma ondeada + scroll
-    if (showDetails)
-      Positioned.fill(
-        child: AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return ClipPath(
-              clipper: WaveClipper(progress: _animation.value),
-              child: Container(
-                color: AppColors.aRed,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.description,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.left,
+          /// ✅ Barrido lateral con forma ondeada y botón fijo
+        if (widget.showDetails)
+            Positioned.fill(
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return ClipPath(
+                    clipper: WaveClipper(progress: _animation.value),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
                       ),
-                      const SizedBox(height: 24),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black.withOpacity(0.2),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TicketDetailPage(
-                                  title: widget.title,
-                                  price: widget.price,
-                                  description: widget.description,
-                                  image: widget.image,
+                      child: Container(
+                        color: AppColors.aRed,
+                        child: Stack(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                20,
+                                15,
+                                20,
+                                80,
+                              ),
+                              child: SingleChildScrollView(
+                                controller: _scrollController,
+                                child: Text(
+                                  widget.description,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    height: 1.5,
+                                  ),
+                                  textAlign: TextAlign.left,
                                 ),
                               ),
-                            );
-                          },
-                          child: const Text(
-                            'Continuar',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
+                            ),
+                            Positioned(
+                              right: 16,
+                              bottom: 16,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black.withOpacity(
+                                    0.2,
+                                  ),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => TicketDetailPage(
+                                            title: widget.title,
+                                            price: widget.price,
+                                            description: widget.description,
+                                            image: widget.image,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  'Continuar',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
+            ),
+        ],
       ),
-  ],
-)
-,
     );
   }
 }

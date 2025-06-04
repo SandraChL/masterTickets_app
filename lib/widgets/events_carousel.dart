@@ -163,6 +163,7 @@ class _FeaturedEventsCarouselState extends State<FeaturedEventsCarousel> {
             ),
           ),
         ],
+
       ),
     );
   }

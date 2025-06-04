@@ -63,167 +63,159 @@ class _TicketCardState extends State<TicketCard>
     return GestureDetector(
       onTap: toggleDetails,
       child: Stack(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  // ignore: deprecated_member_use
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+  children: [
+    Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            Image.asset(
+              widget.image,
+              height: 220,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Stack(
-                children: [
-                  Image.asset(
-                    widget.image,
-                    height: 220,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+            Container(
+              height: 220,
+              width: double.infinity,
+              color: Colors.black.withOpacity(0.3),
+            ),
+            if (widget.isDiscount)
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.aRed,
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  Container(
-                    height: 220,
-                    width: double.infinity,
-                    // ignore: deprecated_member_use
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                  if (widget.isDiscount)
-                    Positioned(
-                      top: 12,
-                      left: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.aRed,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          'DESCUENTO',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                  child: const Text(
+                    'DESCUENTO',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                  Positioned(
-                    bottom: 12,
-                    left: 12,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(blurRadius: 4, color: Colors.black),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '\$${widget.price} MXN',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            shadows: [
-                              Shadow(blurRadius: 4, color: Colors.black),
-                            ],
-                          ),
-                        ),
+                  ),
+                ),
+              ),
+            Positioned(
+              bottom: 12,
+              left: 12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(blurRadius: 4, color: Colors.black),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '\$${widget.price} MXN',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      shadows: [
+                        Shadow(blurRadius: 4, color: Colors.black),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-
-          /// ✅ Barrido lateral con forma ondeada
-          if (showDetails)
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _animation,
-                builder: (context, child) {
-                  return ClipPath(
-                    clipper: WaveClipper(progress: _animation.value),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      color: AppColors.aRed,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Texto descriptivo alineado a la izquierda
-                          Text(
-                            widget.description,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-
-                          // Botón "Continuar"
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                // ignore: deprecated_member_use
-                                backgroundColor: Colors.black.withOpacity(0.2),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => TicketDetailPage(
-                                          title: widget.title,
-                                          price: widget.price,
-                                          description: widget.description,
-                                          image: widget.image,
-                                        ),
-                                  ),
-                                );
-                              },
-
-                              child: const Text(
-                                'Continuar',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
+    ),
+
+    /// ✅ Barrido lateral con forma ondeada + scroll
+    if (showDetails)
+      Positioned.fill(
+        child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return ClipPath(
+              clipper: WaveClipper(progress: _animation.value),
+              child: Container(
+                color: AppColors.aRed,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.description,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      const SizedBox(height: 24),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black.withOpacity(0.2),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TicketDetailPage(
+                                  title: widget.title,
+                                  price: widget.price,
+                                  description: widget.description,
+                                  image: widget.image,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Continuar',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+  ],
+)
+,
     );
   }
 }

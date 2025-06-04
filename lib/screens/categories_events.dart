@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import '../widgets/app_bar.dart';
+import '../utils/event_info.dart';
+import '../widgets/carrito.dart';
+import '../widgets/drawer.dart';
+import '../widgets/footer.dart';
 import '../widgets/ticket_card.dart';
+import '../models/cart.dart';
 
 class TicketModel {
   final String title;
@@ -39,6 +43,8 @@ class EventDetailPage extends StatefulWidget {
 class _EventDetailPageState extends State<EventDetailPage> {
   final ScrollController _scrollController = ScrollController();
   bool _isAtBottom = false;
+  int get cartItemCount => cart.fold(0, (sum, item) => sum + item.quantity);
+  int? expandedIndex;
 
   final List<TicketModel> tickets = [
     TicketModel(
@@ -87,7 +93,7 @@ Incluye:
 • Estacionamiento cerca del Evento
 • Acceso General
 • Boleto Sorteos
-• Boleto Sorteos''',
+''',
     ),
 
     TicketModel(
@@ -198,10 +204,10 @@ Incluye:
 Precio en línea: \$8500 MXN 
 
 Incluye:
-• TODOS LOS BENEFICIOS ACCESO VIP ORO
-• TAXIDRIFT CON PILOTOS PROFESIONALES
-• COPILOTO EN AUTO F&F DURANTE SHOW EN PISTA
-• SESIÓN DE FOTOS Y APARICIÓN EN AFTERMOVIE
+• Todos los beneficierios acceso vip oro 
+• Taxidrift con pilotos profecionales
+• Copiloto en auto F&F durante show en pista 
+• Sesión de fotos y aparición en Aftermovie
 ''',
     ),
   ];
@@ -209,6 +215,13 @@ Incluye:
   @override
   void initState() {
     super.initState();
+
+    // Guarda los valores del evento actual
+    selectedEventTitle = widget.title;
+    selectedEventDate = widget.date;
+    selectedEventLocation = widget.location;
+    selectedEventImage = widget.image;
+
     _scrollController.addListener(() {
       final isAtBottomNow =
           _scrollController.offset >=
@@ -238,7 +251,9 @@ Incluye:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
+      drawer: const CustomDrawer(),
+      appBar: const CustomHeader(title: 'Eventos'),
+
       floatingActionButton: FloatingActionButton(
         onPressed: _scrollToPosition,
         backgroundColor: Colors.white,
@@ -267,19 +282,6 @@ Incluye:
                     fit: BoxFit.cover,
                     height: 200,
                     width: double.infinity,
-                  ),
-                ),
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.black54,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
                   ),
                 ),
                 Positioned(
@@ -342,18 +344,29 @@ Incluye:
                     itemCount: tickets.length,
                     itemBuilder: (context, index) {
                       final ticket = tickets[index];
-                      return TicketCard(
-                        title: ticket.title,
-                        price: ticket.price,
-                        image: ticket.image,
-                        isDiscount: ticket.isDiscount,
-                        description: ticket.description,
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: TicketCard(
+                          title: ticket.title,
+                          price: ticket.price,
+                          image: ticket.image,
+                          isDiscount: ticket.isDiscount,
+                          description: ticket.description,
+                          showDetails: expandedIndex == index,
+                          onTap: () {
+                            setState(() {
+                              expandedIndex =
+                                  expandedIndex == index ? null : index;
+                            });
+                          },
+                        ),
                       );
                     },
                   ),
                 ],
               ),
             ),
+            const CustomFooter(),
           ],
         ),
       ),

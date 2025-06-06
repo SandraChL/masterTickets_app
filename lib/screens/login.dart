@@ -13,7 +13,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool forgotPressed = false; // <- nuevo estado
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Container(
-                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.3),
               ),
             ],
@@ -46,17 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       vertical: 30,
                     ),
                     decoration: BoxDecoration(
-                      // ignore: deprecated_member_use
                       color: Colors.white.withOpacity(0.50),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
-                        // ignore: deprecated_member_use
                         color: Colors.white.withOpacity(0.1),
                         width: 2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.25),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
@@ -75,64 +79,63 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        _buildTextField(hint: "Username", icon: Icons.person),
+                        _buildTextField(
+                          hint: "Username",
+                          icon: Icons.person,
+                          controller: _usernameController,
+                        ),
                         const SizedBox(height: 15),
                         _buildTextField(
                           hint: "Password",
                           icon: Icons.lock,
                           isPassword: true,
+                          controller: _passwordController,
                         ),
                         const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            const Spacer(),
-                            TextButton(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20),
-                                    ),
-                                  ),
-                                  builder:
-                                      (context) =>
-                                          const PasswordResetBottomSheet(),
-                                );
-                              },
-                              child: const Text(
-                                " ",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ],
-                        ),
-
                         const SizedBox(height: 10),
                         Container(
                           width: double.infinity,
                           height: 50,
                           decoration: BoxDecoration(
-                            // ignore: deprecated_member_use
                             color: Colors.white.withOpacity(0.50),
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
-                              // ignore: deprecated_member_use
                               color: Colors.white.withOpacity(0.1),
                               width: 2,
                             ),
                           ),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const HomeScreen(),
-                                ),
-                              );
+                              final username = _usernameController.text.trim();
+                              final password = _passwordController.text.trim();
+
+                              if (username == 'test' &&
+                                  password == '123456789') {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const HomeScreen(),
+                                  ),
+                                );
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Error'),
+                                    content: const Text(
+                                        'Usuario o contraseña incorrectos.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
                             },
-                            child: Text(
+                            child: const Text(
                               "LOGIN",
                               style: TextStyle(
                                 color: Colors.black,
@@ -142,21 +145,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // const Text(
-                        //   "Don't have account?",
-                        //   style: TextStyle(color: Colors.black),
-                        // ),
-                        // TextButton(
-                        //   onPressed: () {},
-                        //   child: const Text(
-                        //     "Subscribe",
-                        //     style: TextStyle(
-                        //       color: Colors.black,
-                        //       decoration: TextDecoration.underline,
-                        //       fontWeight: FontWeight.bold,
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
@@ -172,119 +160,27 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildTextField({
     required String hint,
     required IconData icon,
+    required TextEditingController controller,
     bool isPassword = false,
   }) {
     return Container(
       decoration: BoxDecoration(
-        // ignore: deprecated_member_use
         color: Colors.white.withOpacity(0.60),
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextField(
+        controller: controller,
         obscureText: isPassword,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.black),
-          suffixIcon:
-              isPassword
-                  ? const Icon(Icons.visibility_off, color: Colors.black)
-                  : null,
+          suffixIcon: isPassword
+              ? const Icon(Icons.visibility_off, color: Colors.black)
+              : null,
           hintText: hint,
           hintStyle: const TextStyle(color: Colors.black),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
-        ),
-      ),
-    );
-  }
-}
-
-class PasswordResetBottomSheet extends StatefulWidget {
-  const PasswordResetBottomSheet({super.key});
-
-  @override
-  State<PasswordResetBottomSheet> createState() =>
-      _PasswordResetBottomSheetState();
-}
-
-class _PasswordResetBottomSheetState extends State<PasswordResetBottomSheet> {
-  bool showCurrent = false;
-  bool showNew = false;
-  bool showConfirm = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20,
-        right: 20,
-        top: 30,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildPasswordField(
-              label: 'Current Password',
-              obscure: !showCurrent,
-              toggle: () => setState(() => showCurrent = !showCurrent),
-            ),
-            const SizedBox(height: 15),
-            _buildPasswordField(
-              label: 'New Password',
-              obscure: !showNew,
-              toggle: () => setState(() => showNew = !showNew),
-            ),
-            const SizedBox(height: 15),
-            _buildPasswordField(
-              label: 'Confirm New Password',
-              obscure: !showConfirm,
-              toggle: () => setState(() => showConfirm = !showConfirm),
-            ),
-            const SizedBox(height: 25),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Cierra el Bottom Sheet
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              child: const Text(
-                'Update Password',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPasswordField({
-    required String label,
-    required bool obscure,
-    required VoidCallback toggle,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        obscureText: obscure,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-          suffixIcon: IconButton(
-            icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
-            onPressed: toggle,
-          ),
         ),
       ),
     );

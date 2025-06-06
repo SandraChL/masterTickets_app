@@ -67,96 +67,100 @@ class _CustomHeaderState extends State<CustomHeader> {
     final canGoBack = Navigator.of(context).canPop();
 
     return AppBar(
-      automaticallyImplyLeading: false,
-      backgroundColor: AppColors.aRed,
-      elevation: 0,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              if (canGoBack)
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
-                },
-                child: Image.asset(
-                  'assets/images/LogoSGF.jpeg',
-                  height: 30,
-                  fit: BoxFit.contain,
-                ),
+  automaticallyImplyLeading: false,
+  backgroundColor: AppColors.aRed,
+  elevation: 0,
+  title: Row(
+    children: [
+      Expanded(
+        child: Row(
+          children: [
+            if (canGoBack)
+              IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.of(context).pop(),
               ),
-            ],
-          ),
-          Row(
-            children: [
-              Stack(
-                alignment: Alignment.topRight,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.shopping_cart, color: Colors.white),
-                    onPressed: () {
-                      if (cartNotifier.cartItems.isNotEmpty) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => CheckoutPage(
-                                  cartItems: cartNotifier.cartItems,
-                                  eventTitle: selectedEventTitle ?? '',
-                                  eventDate: selectedEventDate ?? '',
-                                  eventLocation: selectedEventLocation ?? '',
-                                  eventImage: selectedEventImage ?? '',
-                                ),
+            // GestureDetector(
+            //   onTap: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (_) => const LoginScreen()),
+            //     );
+            //   },
+            //   child: Image.asset(
+            //     'assets/images/LogoSGF.jpeg',
+            //     height: 30,
+            //     fit: BoxFit.contain,
+            //   ),
+            // ),
+          ],
+        ),
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.min, // 👈 clave para evitar que se expanda demasiado
+        children: [
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.shopping_cart, color: Colors.white),
+                  onPressed: () {
+                    if (cartNotifier.cartItems.isNotEmpty) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CheckoutPage(
+                            cartItems: cartNotifier.cartItems,
+                            eventTitle: selectedEventTitle ?? '',
+                            eventDate: selectedEventDate ?? '',
+                            eventLocation: selectedEventLocation ?? '',
+                            eventImage: selectedEventImage ?? '',
                           ),
-                        );
-                      }
-                    },
-                  ),
-                  if (cartItemCount > 0)
-                    Positioned(
-                      right: 6,
-                      top: 6,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
                         ),
-                        constraints: const BoxConstraints(
-                          minWidth: 20,
-                          minHeight: 20,
+                      );
+                    }
+                  },
+                ),
+                if (cartItemCount > 0)
+                  Positioned(
+                    right: 6,
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 20,
+                        minHeight: 20,
+                      ),
+                      child: Text(
+                        '$cartItemCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
                         ),
-                        child: Text(
-                          '$cartItemCount',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                ],
-              ),
-              Builder(
-                builder:
-                    (context) => IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                    ),
-              ),
-            ],
+                  ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ],
       ),
-    );
+    ],
+  ),
+);
+
+
   }
 }

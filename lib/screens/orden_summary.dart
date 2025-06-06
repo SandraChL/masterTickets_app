@@ -42,7 +42,7 @@ class OrderSummaryPage extends StatelessWidget {
           children: [
             const Center(
               child: Text(
-                'Gracias por simular tu compra',
+                'Gracias por tu compra',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

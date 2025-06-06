@@ -222,7 +222,7 @@ class CheckoutPage extends StatelessWidget {
                       );
                     },
                     child: const Text(
-                      'Realizar simulacion de el pedido',
+                      'Realizar el pedido',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../utils/cart_item.dart';
-
 class CartNotifier extends ValueNotifier<List<CartItem>> {
   CartNotifier() : super([]);
 

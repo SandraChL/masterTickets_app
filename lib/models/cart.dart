@@ -1,4 +1,3 @@
-library cart;
 
 import '../utils/cart_item.dart';
 

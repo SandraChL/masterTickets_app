@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../models/cart_notifier.dart';
 import '../utils/cart_item.dart';
 import '../utils/colors.dart';
 import '../screens/home_screen.dart';
+import '../utils/purchased_event.dart';
 
 class OrderSummaryPage extends StatelessWidget {
   final List<CartItem> cartItems;
@@ -128,10 +130,25 @@ class OrderSummaryPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () {
+                  // Guarda el evento con los boletos comprados
+                  purchasedEvents.add(
+                    PurchasedEvent(
+                      title: eventTitle,
+                      date: eventDate,
+                      location: eventLocation,
+                      image: eventImage,
+                      tickets: List.from(cartItems),
+                    ),
+                  );
+
+                  // ✅ Limpia el carrito
+                  cartNotifier.clear();
+
+                  // Vuelve a la pantalla de inicio
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const HomeScreen()),
-                    (route) => false, // Elimina todas las páginas anteriores
+                    (route) => false,
                   );
                 },
                 child: const Text(

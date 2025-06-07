@@ -202,11 +202,14 @@ class CheckoutPage extends StatelessWidget {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: AppColors.aRed,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       minimumSize: const Size(double.infinity, 50),
                     ),
+
                     onPressed: () {
+                    //  print('➡️ Imagen que se enviará: $eventImage');
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(

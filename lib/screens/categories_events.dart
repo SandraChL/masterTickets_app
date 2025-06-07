@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/event_info.dart';
+import '../models/selected_event.dart';
 import '../widgets/carrito.dart';
 import '../widgets/drawer.dart';
 import '../widgets/footer.dart';
@@ -215,12 +215,13 @@ Incluye:
   @override
   void initState() {
     super.initState();
-
     // Guarda los valores del evento actual
-    selectedEventTitle = widget.title;
-    selectedEventDate = widget.date;
-    selectedEventLocation = widget.location;
-    selectedEventImage = widget.image;
+    selectedEvent = SelectedEvent(
+      title: widget.title,
+      date: widget.date,
+      location: widget.location,
+      image: widget.image,
+    );
 
     _scrollController.addListener(() {
       final isAtBottomNow =
@@ -261,7 +262,7 @@ Incluye:
         shape: const CircleBorder(),
         child: Icon(
           _isAtBottom ? Icons.arrow_upward : Icons.arrow_downward,
-          color: Colors.black87,
+          color: Colors.black,
         ),
       ),
 

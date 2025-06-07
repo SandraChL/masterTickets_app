@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../screens/ticket_detail.dart';
 import '../utils/colors.dart';
@@ -216,7 +218,7 @@ class _TicketCardState extends State<TicketCard>
                                             title: widget.title,
                                             price: widget.price,
                                             description: widget.description,
-                                            image: widget.image,
+                                            image: widget.image, date: '',
                                           ),
                                     ),
                                   );

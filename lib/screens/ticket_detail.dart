@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../models/cart_notifier.dart';
 import '../utils/cart_item.dart';
+import '../utils/colors.dart';
 import '../widgets/carrito.dart';
 import '../widgets/drawer.dart';
 import '../widgets/footer.dart';
@@ -16,7 +18,7 @@ class TicketDetailPage extends StatefulWidget {
     required this.title,
     required this.price,
     required this.description,
-    required this.image,
+    required this.image, required String date,
   });
 
   @override
@@ -140,7 +142,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
+                            backgroundColor: AppColors.aRed,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
                           onPressed: agregarAlCarrito,

@@ -47,6 +47,7 @@ dev_dependencies:
   lottie: ^2.6.0
   animate_do: ^2.1.0
   font_awesome_flutter: ^10.6.0
+  qr_flutter: ^4.1.0
   
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -124,4 +125,4 @@ flutter_launcher_icons:
   android: true
   ios: true
   color: "#000000" 
-  image_path: "assets/images/carro.png" 
+  image_path: "assets/images/Carru.png" 

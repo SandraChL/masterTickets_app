@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/event_List.dart';
 import '../screens/login.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -82,22 +83,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ),
 
-          // ListTile(
-          //   leading: const Icon(Icons.backpack_outlined),
-          //   title: const Text('Tus Eventos'),
-          //   onTap: () {},
-          // ),
-          // ListTile(
-          //   leading: const Icon(Icons.app_registration),
-          //   title: const Text('Registro'),
-          //   onTap: () {},
-          // ),
+          ListTile(
+            leading: const Icon(Icons.backpack_outlined),
+            title: const Text('Tus Eventos'),
+            onTap: () {
+              Navigator.pop(context); // Cierra el Drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SelectedEventPage()),
+              );
+            },
+          ),
 
-          // ListTile(
-          //   leading: const Icon(Icons.help_outline),
-          //   title: const Text('Ayuda y soporte'),
-          //   onTap: () {},
-          // ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Finalizar la sesión'),

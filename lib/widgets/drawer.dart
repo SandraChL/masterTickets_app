@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/screens/qrscaner.dart';
+import 'package:master_tickets/screens/testhome.dart';
+import 'package:master_tickets/utils/session_manager.dart';
 import '../screens/event_List.dart';
 import '../screens/login.dart';
 
@@ -49,40 +52,39 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
 
-          ListTile(
-            leading: const Icon(Icons.manage_accounts_outlined),
-            title: const Text('Administrar cuentas'),
-            trailing: Icon(
-              showPersonalData ? Icons.expand_less : Icons.expand_more,
-            ),
-            onTap: () {
-              setState(() {
-                showPersonalData = !showPersonalData;
-              });
-            },
-          ),
-          if (showPersonalData)
-            Padding(
-              padding: const EdgeInsets.only(left: 60.0),
-              child: ListTile(
-                leading: const Icon(Icons.person_outline),
-                title: const Text('Datos personales'),
-                onTap: () {
-                  Navigator.pop(context); // Cierra el drawer
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                    ),
-                    builder: (context) => const PersonalDataBottomSheet(),
-                  );
-                },
-              ),
-            ),
-
+          // ListTile(
+          //   leading: const Icon(Icons.manage_accounts_outlined),
+          //   title: const Text('Administrar cuentas'),
+          //   trailing: Icon(
+          //     showPersonalData ? Icons.expand_less : Icons.expand_more,
+          //   ),
+          //   onTap: () {
+          //     setState(() {
+          //       showPersonalData = !showPersonalData;
+          //     });
+          //   },
+          // ),
+          // if (showPersonalData)
+          //   Padding(
+          //     padding: const EdgeInsets.only(left: 60.0),
+          //     child: ListTile(
+          //       leading: const Icon(Icons.person_outline),
+          //       title: const Text('Datos personales'),
+          //       onTap: () {
+          //         Navigator.pop(context); // Cierra el drawer
+          //         showModalBottomSheet(
+          //           context: context,
+          //           isScrollControlled: true,
+          //           shape: const RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.vertical(
+          //               top: Radius.circular(20),
+          //             ),
+          //           ),
+          //           builder: (context) => const PersonalDataBottomSheet(),
+          //         );
+          //       },
+          //     ),
+          //   ),
           ListTile(
             leading: const Icon(Icons.backpack_outlined),
             title: const Text('Tus Eventos'),
@@ -94,11 +96,36 @@ class _CustomDrawerState extends State<CustomDrawer> {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.backpack_outlined),
+            title: const Text('test'),
+            onTap: () {
+              Navigator.pop(context); // Cierra el Drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HomeScreentesttest()),
+              );
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.backpack_outlined),
+            title: const Text('Scanear Tickets'),
+            onTap: () {
+              Navigator.pop(context); // Cierra el Drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const QrScannerPage()),
+              );
+            },
+          ),
 
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Finalizar la sesión'),
-            onTap: () {
+            onTap: () async {
+              await SessionManager.setLoggedIn(false); // 👈 cerrar sesión
+
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),

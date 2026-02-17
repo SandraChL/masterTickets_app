@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/screens/QrScreen.dart';
+import 'package:master_tickets/utils/encrypta.dart' show encryptQueryParams;
 import '../models/selected_event.dart';
 import '../utils/cart_item.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'dart:convert';
 
 class EventSummaryPage extends StatelessWidget {
   final List<CartItem> cartItems;
@@ -9,6 +12,7 @@ class EventSummaryPage extends StatelessWidget {
   final String eventDate;
   final String eventLocation;
   final String eventImage;
+  final String idventa;
 
   const EventSummaryPage({
     super.key,
@@ -17,39 +21,23 @@ class EventSummaryPage extends StatelessWidget {
     required this.eventDate,
     required this.eventLocation,
     required this.eventImage,
+    required this.idventa,
   });
 
-  void _showQRDialog(BuildContext context) {
-    final qrData =
-        'Evento: $eventTitle\nFecha: $eventDate\nUbicación: $eventLocation';
+ void _goToQrScreen(BuildContext context) {
+  final encryptedData = encryptQueryParams(eventTitle, eventDate, eventLocation);
 
-    showDialog(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Código QR del Evento'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                QrImageView(
-                  data: qrData,
-                  version: QrVersions.auto,
-                  size: 200.0,
-                ),
-                const SizedBox(height: 12),
-                const Text('Escanea este código para validar tu acceso.'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cerrar'),
-              ),
-            ],
-          ),
-    );
-  }
+  final qrData = 'https://workingdevsolutions.com/validationticket?idventa=$idventa';
 
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => QrScreen(qrData: qrData),
+    ),
+  );
+}
+
+ 
   @override
   Widget build(BuildContext context) {
     final fallbackEvent = selectedEvent;
@@ -112,11 +100,11 @@ class EventSummaryPage extends StatelessWidget {
               ),
             const SizedBox(height: 24),
             Center(
-              child: ElevatedButton.icon(
-                onPressed: () => _showQRDialog(context),
-                icon: const Icon(Icons.qr_code),
-                label: const Text('Mostrar QR'),
-              ),
+             child: ElevatedButton.icon(
+              onPressed: () => _goToQrScreen(context),
+              icon: const Icon(Icons.qr_code),
+              label: const Text('Mostrar QR'),
+            ),
             ),
           ],
         ),

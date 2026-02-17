@@ -40,7 +40,7 @@ class _AutoBannerState extends State<AutoBanner> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 400,
+      height: 250,
       width: double.infinity,
       child: Stack(
         fit: StackFit.expand,
@@ -59,13 +59,13 @@ class _AutoBannerState extends State<AutoBanner> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset(
-                  'assets/images/FastFurious.png',
-                  height: 180,
-                  width: 500,
-                  fit: BoxFit.contain,
-                ),
-                const SizedBox(height: 10),
+                // Image.asset(
+                //   'assets/images/FastFurious.png',
+                //   height: 180,
+                //   width: 500,
+                //   fit: BoxFit.contain,
+                // ),
+                // const SizedBox(height: 10),
                 Text(
                   '¡EL EVENTO DEL AÑO!',
                   style: TextStyle(
@@ -81,23 +81,23 @@ class _AutoBannerState extends State<AutoBanner> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  'ACTORES DE LA SAGA',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Text(
-                  'YOUTUBERS',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                //const SizedBox(height: 12),
+                // const Text(
+                //   'ACTORES DE LA SAGA',
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     color: Colors.white,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                // const Text(
+                //   'YOUTUBERS',
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     color: Colors.white,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
                 const Text(
                   'ARRANCONES/DRIFT',
                   style: TextStyle(

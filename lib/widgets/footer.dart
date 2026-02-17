@@ -25,7 +25,7 @@ class CustomFooter extends StatelessWidget {
 
           // Texto copyright
           const Text(
-            '© SUPERGARAGEFEST - 2025',
+            '© Master Tickets - 2026',
             style: TextStyle(color: Colors.white70),
           ),
         ],

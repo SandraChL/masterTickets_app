@@ -1,4 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:master_tickets/models/tickets.dart';
+import 'package:master_tickets/services/events_service.dart';
+
 import '../models/selected_event.dart';
 import '../widgets/carrito.dart';
 import '../widgets/drawer.dart';
@@ -6,6 +11,9 @@ import '../widgets/footer.dart';
 import '../widgets/ticket_card.dart';
 import '../models/cart.dart';
 
+/* ============================
+   UI MODEL
+============================ */
 class TicketModel {
   final String title;
   final double price;
@@ -22,11 +30,71 @@ class TicketModel {
   });
 }
 
+
+
+List<TicketModel> mapZonesToTicketModels(TicketResponse response) {
+  return response.data
+      .where((zone) =>
+          zone.arrayTickets.any(
+            (t) => !t.bought && !t.pulledApart,
+          ))
+      .map((zone) {
+        final availableTickets = zone.arrayTickets
+            .where((t) => !t.bought && !t.pulledApart)
+            .toList();
+
+        final minPrice = availableTickets
+            .map((t) => t.price)
+            .reduce((a, b) => a < b ? a : b);
+
+        return TicketModel(
+          title: zone.nameZona.toUpperCase(),
+          price: minPrice.toDouble(),
+          image: 'assets/images/Category.png',
+          description: zone.description ?? 'Acceso ${zone.nameZona}',
+        );
+      })
+      .toList();
+}
+
+
+
+/* ============================
+   ADAPTER API → UI
+============================ */
+List<TicketModel> mapTicketsFromResponse(TicketResponse response) {
+  final List<TicketModel> tickets = [];
+
+  for (final zone in response.data) {
+    for (final ticket in zone.arrayTickets) {
+      // 🔥 FILTRO CORRECTO
+      if (ticket.bought || ticket.pulledApart) continue;
+
+      tickets.add(
+        TicketModel(
+          title: zone.nameZona.toUpperCase(),
+          price: ticket.price.toDouble(),
+          image: 'assets/images/Category.png',
+          description: zone.description ?? 'Acceso ${zone.nameZona}',
+        ),
+      );
+    }
+  }
+
+  return tickets;
+}
+
+
+/* ============================
+   PAGE
+============================ */
 class EventDetailPage extends StatefulWidget {
   final String title;
   final String date;
   final String location;
   final String image;
+  final int idstage;
+  final int idevento;
 
   const EventDetailPage({
     super.key,
@@ -34,6 +102,8 @@ class EventDetailPage extends StatefulWidget {
     required this.date,
     required this.location,
     required this.image,
+    required this.idstage,
+    required this.idevento,
   });
 
   @override
@@ -43,179 +113,20 @@ class EventDetailPage extends StatefulWidget {
 class _EventDetailPageState extends State<EventDetailPage> {
   final ScrollController _scrollController = ScrollController();
   bool _isAtBottom = false;
-  int get cartItemCount => cart.fold(0, (sum, item) => sum + item.quantity);
   int? expandedIndex;
 
-  final List<TicketModel> tickets = [
-    TicketModel(
-      title: 'NIÑOS GENERAL',
-      price: 150,
-      image: 'assets/images/Category.png',
-      isDiscount: true,
-      description: '''Entrada Niños menores a 10 años (0 a 4 años GRATIS)
-Precio en línea: \$150 MXN (en taquilla: \$200 MXN)
-Incluye:
-• Acceso General al Evento
-• Boleto para el Sorteo HotWheels
-• En compañía de un adulto''',
-    ),
-
-    TicketModel(
-      title: 'GRADAS',
-      price: 200,
-      image: 'assets/images/Category.png',
-      description: '''
-Precio en línea: \$200 MXN
-Incluye:
-• 1 Acceso a Gradas para Show en Pista
-• Niños Gratis
-• Cupo limitado''',
-    ),
-
-    TicketModel(
-      title: 'GENERAL',
-      price: 350,
-      image: 'assets/images/Category.png',
-      isDiscount: true,
-      description: '''Precio en línea: \$350 MXN
-Incluye:
-• Entrada general al evento
-• Acceso a exhibición de autos, stands, actividades y shows''',
-    ),
-
-    TicketModel(
-      title: 'ACCESO RAPIDO',
-      price: 500,
-      image: 'assets/images/Category.png',
-      description: '''Precio en línea: \$500 MXN
-
-Incluye:
-• Estacionamiento cerca del Evento
-• Acceso General
-• Boleto Sorteos
-''',
-    ),
-
-    TicketModel(
-      title: 'SUPERMEET CLUB',
-      price: 1200,
-      image: 'assets/images/Category.png',
-      description:
-          '''Inscripción de Club – Exhibición Supermeet, Costo por Auto, + 5 autos
-(Registro por WhatsApp hasta el 01 de Junio)
-Precio en línea: \$1200 MXN 
-
-Incluye:
-• Acceso Piloto
-• Estacionamiento de Exhibición
-• Gafete Personalizado Piloto
-• Concurza por Premios
-• Reconocimientos
-• Boleto Sorteros
-''',
-    ),
-
-    TicketModel(
-      title: 'SUPERMEET',
-      price: 1500,
-      image: 'assets/images/Category.png',
-      description: '''
-Precio en línea: \$1500 MXN
-
-Incluye:
-• Acceso General al Evento
-• Zona Preferencial Exhibición
-• Gafete Personalizado
-• Participa por Premios
-• Boleto Sorteros
-''',
-    ),
-
-    TicketModel(
-      title: 'MEDIOS Y CREADORES',
-      price: 1500,
-      image: 'assets/images/Category.png',
-      description: '''
-Precio en línea: \$1500 
-
-Incluye:
-• Invitación a Rueda de Prensa
-• Acceso General al Evento
-•  Estacionamiento Preferencial
-•  Gafete Personalizado
-•  Acceso a Gradas
-•  Acceso a Zonas Especiales con Gafete
-''',
-    ),
-
-    TicketModel(
-      title: 'CARSHOW VIP',
-      price: 2500,
-      image: 'assets/images/Category.png',
-      description: '''DISPONIBLE HASTA EL 01 DE JUNIO
-Precio en línea: \$2500 MXN
-
-Incluye:
-• Exhibición Principal bajo Techo
-• Acceso Piloto y Copiloto
-•  Gafete Personalizado
-•  Concursa por Premio al Mejor Auto
-•  Participa en Show de Pista F&F
-•  Boleto para Sorteo
-''',
-    ),
-
-    TicketModel(
-      title: 'VIP PLATA',
-      price: 2500,
-      image: 'assets/images/Category.png',
-      description: '''DISPONIBLE HASTA EL 01 DE JUNIO
-Precio en línea: \$2500 MXN 
-
-Incluye:
-• Acceso General al Evento
-• Boleto para el Sorteo HotWheels
-• En compañía de un adulto''',
-    ),
-
-    TicketModel(
-      title: 'VIP ORO',
-      price: 3500,
-      image: 'assets/images/Category.png',
-      description: '''DISPONIBLE HASTA EL 01 DE JUNIO
-Precio en línea: \$3500 MXN 
-
-Incluye:
-• Meet and Grat con Actores F&F y YouTuber’s
-• Playera Oficial SGF Autografiada
-• Gafete Personalizado
-• Cómoda Zona VIP con Baños Privados
-• Estacionamiento Cerca del Evento
-• Acceso a Gradas
-• Sorteos
-''',
-    ),
-
-    TicketModel(
-      title: 'SUPER VIP',
-      price: 8500,
-      image: 'assets/images/Category.png',
-      description: '''DISPONIBLE HASTA EL 01 DE JUNIO
-Precio en línea: \$8500 MXN 
-
-Incluye:
-• Todos los beneficierios acceso vip oro 
-• Taxidrift con pilotos profecionales
-• Copiloto en auto F&F durante show en pista 
-• Sesión de fotos y aparición en Aftermovie
-''',
-    ),
-  ];
+  late Future<TicketResponse> _ticketsFuture;
 
   @override
   void initState() {
     super.initState();
-    // Guarda los valores del evento actual
+
+      _ticketsFuture = EventsService.fetchFeaturedTickets(
+      idStage: widget.idstage,
+      idEvento: widget.idevento,
+      maxTickets: 100,
+    );
+
     selectedEvent = SelectedEvent(
       title: widget.title,
       date: widget.date,
@@ -224,29 +135,23 @@ Incluye:
     );
 
     _scrollController.addListener(() {
-      final isAtBottomNow =
-          _scrollController.offset >=
+      final atBottom = _scrollController.offset >=
           _scrollController.position.maxScrollExtent;
-      setState(() {
-        _isAtBottom = isAtBottomNow;
-      });
+
+      if (atBottom != _isAtBottom) {
+        setState(() {
+          _isAtBottom = atBottom;
+        });
+      }
     });
   }
 
   void _scrollToPosition() {
-    if (_isAtBottom) {
-      _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    }
+    _scrollController.animateTo(
+      _isAtBottom ? 0 : _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -258,8 +163,6 @@ Incluye:
       floatingActionButton: FloatingActionButton(
         onPressed: _scrollToPosition,
         backgroundColor: Colors.white,
-        elevation: 6, // Sombra
-        shape: const CircleBorder(),
         child: Icon(
           _isAtBottom ? Icons.arrow_upward : Icons.arrow_downward,
           color: Colors.black,
@@ -271,82 +174,70 @@ Incluye:
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(12),
-                    bottomRight: Radius.circular(12),
-                  ),
-                  child: Image.asset(
-                    widget.image,
-                    fit: BoxFit.cover,
-                    height: 200,
-                    width: double.infinity,
-                  ),
-                ),
-                Positioned(
-                  left: 16,
-                  bottom: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      // ignore: deprecated_member_use
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.date,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        Text(
-                          widget.location,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            Image.network(
+              widget.image,
+              height: 200,
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 10),
+
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Boletos disponibles',
+                style:
+                    TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+            ),
+
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Boletos disponibles',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: FutureBuilder<TicketResponse>(
+                future: _ticketsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                if (snapshot.hasError) {
+                  debugPrint('❌ Error cargando boletos');
+                  debugPrint(snapshot.error.toString());
+                 // debugPrint(snapshot.stackTrace.toString());
+
+                  return const Center(
+                    child: Text('Ocurrió un error al cargar los boletos'),
+                  );
+                }
+
+                final response = snapshot.data!;
+
+                debugPrint('flagTickets: ${response.flagTickets}');
+                debugPrint('zones: ${response.data.length}');
+                debugPrint(
+                  'total tickets raw: ${response.data.fold<int>(0, (sum, z) => sum + z.arrayTickets.length)}',
+                );
+
+                final tickets = response.flagTickets
+                    ? mapTicketsFromResponse(response)
+                    : mapZonesToTicketModels(response);
+
+                debugPrint('tickets mapped: ${tickets.length}');
+
+                  return ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: tickets.length,
                     itemBuilder: (context, index) {
                       final ticket = tickets[index];
+
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
+                        padding:
+                            const EdgeInsets.only(bottom: 20),
                         child: TicketCard(
                           title: ticket.title,
                           price: ticket.price,
@@ -357,16 +248,19 @@ Incluye:
                           onTap: () {
                             setState(() {
                               expandedIndex =
-                                  expandedIndex == index ? null : index;
+                                  expandedIndex == index
+                                      ? null
+                                      : index;
                             });
                           },
                         ),
                       );
                     },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
+
             const CustomFooter(),
           ],
         ),

@@ -99,7 +99,7 @@ class SelectedEventPage extends StatelessWidget {
                       eventTitle: selectedEvent!.title,
                       eventDate: selectedEvent!.date,
                       eventLocation: selectedEvent!.location,
-                      eventImage: selectedEvent!.image,
+                      eventImage: selectedEvent!.image, idventa: '1456123',
                     ),
               ),
             );

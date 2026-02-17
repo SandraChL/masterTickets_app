@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/screens/home_screen.dart';
+import 'package:master_tickets/screens/qrscaner.dart';
 import 'models/cart.dart';
 import 'screens/checkout_screen.dart';
 import 'screens/login.dart';
@@ -22,7 +24,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
-        '/home': (context) => LoginScreen(),
+        '/home': (context) => HomeScreen(),
+        '/scan': (context) => QrScannerPage(),       
         '/checkout':
             (context) => CheckoutPage(
               cartItems: cart,

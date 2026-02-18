@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:master_tickets/models/tickets.dart';
+import 'package:master_tickets/models/uieventos.dart';
 import 'package:master_tickets/services/events_service.dart';
 
 import '../models/selected_event.dart';
@@ -9,26 +8,7 @@ import '../widgets/carrito.dart';
 import '../widgets/drawer.dart';
 import '../widgets/footer.dart';
 import '../widgets/ticket_card.dart';
-import '../models/cart.dart';
-
-/* ============================
-   UI MODEL
-============================ */
-class TicketModel {
-  final String title;
-  final double price;
-  final String image;
-  final bool isDiscount;
-  final String description;
-
-  TicketModel({
-    required this.title,
-    required this.price,
-    required this.image,
-    required this.description,
-    this.isDiscount = false,
-  });
-}
+ 
 
 
 
@@ -51,6 +31,7 @@ List<TicketModel> mapZonesToTicketModels(TicketResponse response) {
           title: zone.nameZona.toUpperCase(),
           price: minPrice.toDouble(),
           image: 'assets/images/Category.png',
+          totaltickets:zone.arrayTickets.length,
           description: zone.description ?? 'Acceso ${zone.nameZona}',
         );
       })
@@ -75,6 +56,7 @@ List<TicketModel> mapTicketsFromResponse(TicketResponse response) {
           title: zone.nameZona.toUpperCase(),
           price: ticket.price.toDouble(),
           image: 'assets/images/Category.png',
+          totaltickets:zone.arrayTickets.length,
           description: zone.description ?? 'Acceso ${zone.nameZona}',
         ),
       );
@@ -183,7 +165,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             const Padding(
               padding: EdgeInsets.all(16),
               child: Text(
-                'Boletos disponibles',
+                'Boletos disponibles ',
                 style:
                     TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
@@ -244,6 +226,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           image: ticket.image,
                           isDiscount: ticket.isDiscount,
                           description: ticket.description,
+                          totaltickets:ticket.totaltickets,
                           showDetails: expandedIndex == index,
                           onTap: () {
                             setState(() {

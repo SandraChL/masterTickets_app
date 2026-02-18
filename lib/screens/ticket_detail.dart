@@ -12,13 +12,16 @@ class TicketDetailPage extends StatefulWidget {
   final double price;
   final String description;
   final String image;
+  final int totaltickets;
 
   const TicketDetailPage({
     super.key,
     required this.title,
     required this.price,
     required this.description,
-    required this.image, required String date,
+    required this.image, 
+    required this.totaltickets, 
+    required String date,
   });
 
   @override
@@ -115,7 +118,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                     ],
                   ),
                   const Divider(height: 32),
-                  const Text('461 disponibles', style: TextStyle(fontSize: 14)),
+                  Text('${widget.totaltickets} disponibles', style: TextStyle(fontSize: 14)),
                   const SizedBox(height: 12),
                   Row(
                     children: [

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:master_tickets/models/eventos_modelo.dart';
 import 'package:master_tickets/services/events_service.dart';
-// ignore: depend_on_referenced_packages
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../screens/categories_events.dart';
 

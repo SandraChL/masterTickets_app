@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:master_tickets/utils/encrypta.dart';
 import 'package:master_tickets/utils/session_manager.dart';
 import 'home_screen.dart';
 import 'dart:convert';

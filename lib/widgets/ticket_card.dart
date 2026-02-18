@@ -10,6 +10,7 @@ class TicketCard extends StatefulWidget {
   final String image;
   final bool isDiscount;
   final String description;
+  final int totaltickets;
   final bool showDetails;
   final VoidCallback onTap;
 
@@ -19,6 +20,7 @@ class TicketCard extends StatefulWidget {
     required this.price,
     required this.image,
     required this.description,
+    required this.totaltickets,
     required this.showDetails,
     required this.onTap,
     this.isDiscount = false,
@@ -96,6 +98,27 @@ class _TicketCardState extends State<TicketCard>
                     width: double.infinity,
                     color: Colors.black.withOpacity(0.3),
                   ),
+                   Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.aRed,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child:   Text(
+                            'Disponibles: ${widget.totaltickets}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   if (widget.isDiscount)
                     Positioned(
                       top: 12,
@@ -218,7 +241,9 @@ class _TicketCardState extends State<TicketCard>
                                             title: widget.title,
                                             price: widget.price,
                                             description: widget.description,
-                                            image: widget.image, date: '',
+                                            image: widget.image, 
+                                            totaltickets:widget.totaltickets,
+                                            date: '',
                                           ),
                                     ),
                                   );

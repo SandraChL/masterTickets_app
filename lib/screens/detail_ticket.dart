@@ -51,10 +51,8 @@ class EventSummaryPage extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                eventImage.isNotEmpty
-                    ? eventImage
-                    : fallbackEvent?.image ?? 'assets/images/default.jpg',
+              child: Image.network (
+               'https://workingdevsolutions.com/images/MasterT/B3.jpeg',
                 height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,

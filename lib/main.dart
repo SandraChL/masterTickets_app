@@ -18,8 +18,8 @@ print('ENV => ${dotenv.env}');
 print('STRIPE => ${dotenv.env['STRIPE_PUBLIC_KEY']}');
 
    Stripe.publishableKey = dotenv.env['STRIPE_PUBLIC_KEY'] ?? '';
-  // Stripe.merchantIdentifier = 'merchant.com.mastertickets'; // iOS
-  // Stripe.urlScheme = 'flutterstripe'; // Android
+  Stripe.merchantIdentifier = 'merchant.com.mastertickets'; // iOS
+  Stripe.urlScheme = 'flutterstripe'; // Android
 
   await Stripe.instance.applySettings();
 

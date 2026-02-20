@@ -85,7 +85,7 @@ class SelectedEventPage extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalles del Evento')),
+      appBar: AppBar(title: const Text('Detalles del Event3o')),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: InkWell(
@@ -118,8 +118,8 @@ class SelectedEventPage extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      selectedEvent!.image,
+                    child: Image.network (
+               'https://workingdevsolutions.com/images/MasterT/B3.jpeg',
                       height: 140,
                       width: double.infinity,
                       fit: BoxFit.cover,

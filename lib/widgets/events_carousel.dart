@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:master_tickets/models/eventos_modelo.dart';
 import 'package:master_tickets/services/events_service.dart';
+import 'package:master_tickets/utils/session_manager.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../screens/categories_events.dart';
 
@@ -63,12 +64,20 @@ class _FeaturedEventsCarouselState extends State<FeaturedEventsCarousel> {
                     final event = events[index];
 
                     return GestureDetector(
-                      onTap: () {
+                      onTap: () async {
 
-                           print('idEvento builder');
+                           print('idstage builder');
                           print( event.idstage);
                             print('idEvento builder');
+
+
+                      
+
                           print(event.idevento);
+
+                             
+                             await SessionManager.setIdEvento(event.idevento);
+                                      
                         Navigator.push(
                           context,
                           MaterialPageRoute(

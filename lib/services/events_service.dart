@@ -91,4 +91,70 @@ print('ids recibidos para buscar ');
 
     return ticketResponse;
   }
+
+
+
+
+  static Future<void> apartarTicket({
+    required int idTicket,
+    required int idTransaction,
+  }) async {
+
+       final token = await _getBranchId(); 
+    final url =       Uri.parse('https://back.workingdevsolutions.com/happyPath/updateTicket?token=$token');
+
+    final body = {
+      "id_ticket": idTicket,
+      "id_transaction": idTransaction,
+      "pulled_apart": true,
+      "bought": false,
+      "scanapp": false,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception(
+        'Error al apartar ticket $idTicket: ${response.body}',
+      );
+    }
+  }
+
+    static Future<void> completarTicket({
+    required int idTicket,
+    required int idTransaction,
+  }) async {
+
+       final token = await _getBranchId(); 
+    final url =       Uri.parse('https://back.workingdevsolutions.com/happyPath/updateTicket?token=$token');
+
+    final body = {
+      "id_ticket": idTicket,
+      "id_transaction": idTransaction,
+      "pulled_apart": true,
+      "bought": true,
+      "scanapp": false,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception(
+        'Error al apartar ticket $idTicket: ${response.body}',
+      );
+    }
+  }
+
 }

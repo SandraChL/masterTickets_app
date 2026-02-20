@@ -8,7 +8,8 @@ class TicketModel {
   final double price;
   final String image;
   final int totaltickets;
-  final int?  idticket;
+  final int  idzona;
+  final int  idticket;
   final bool isDiscount;
   final String description;
 
@@ -17,7 +18,8 @@ class TicketModel {
     required this.price,
     required this.image,
     required this.totaltickets,
-    this.idticket,
+    required this.idzona,
+    required this.idticket,
     required this.description,
     this.isDiscount = false,
   });

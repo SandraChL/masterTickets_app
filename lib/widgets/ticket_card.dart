@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:master_tickets/utils/session_manager.dart';
 import '../screens/ticket_detail.dart';
 import '../utils/colors.dart';
 
@@ -13,6 +14,8 @@ class TicketCard extends StatefulWidget {
   final int totaltickets;
   final bool showDetails;
   final VoidCallback onTap;
+  final int idzona;
+  final int idticket;
 
   const TicketCard({
     super.key,
@@ -23,6 +26,8 @@ class TicketCard extends StatefulWidget {
     required this.totaltickets,
     required this.showDetails,
     required this.onTap,
+    required this.idzona,
+    required this.idticket,
     this.isDiscount = false,
   });
 
@@ -147,17 +152,19 @@ class _TicketCardState extends State<TicketCard>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(blurRadius: 4, color: Colors.black),
-                            ],
+                          Text(
+                            widget.idticket == 0
+                                ? widget.title
+                                : '${widget.title} ${widget.idticket ?? ''}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(blurRadius: 4, color: Colors.black),
+                              ],
+                            ),
                           ),
-                        ),
                         const SizedBox(height: 4),
                         Text(
                           '\$${widget.price} MXN',
@@ -232,22 +239,32 @@ class _TicketCardState extends State<TicketCard>
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => TicketDetailPage(
+                                onPressed: () async {
+                                      // 🔹 Guarda sesión
+                                      await SessionManager.setLoggedIn(true);
+
+                                      // 🔹 Guarda idZona y idTicket
+                                      await SessionManager.setZonaAndTicket(
+                                        idZona: widget.idzona,     // o el valor que tengas
+                                        idTicket: widget.idticket, // o el valor que tengas
+                                      );
+
+                                      // 🔹 Navega
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => TicketDetailPage(
                                             title: widget.title,
                                             price: widget.price,
                                             description: widget.description,
-                                            image: widget.image, 
-                                            totaltickets:widget.totaltickets,
+                                            image: widget.image,
+                                            totaltickets: widget.totaltickets,
                                             date: '',
                                           ),
-                                    ),
-                                  );
-                                },
+                                        ),
+                                      );
+                                    },
+
                                 child: const Text(
                                   'Continuar',
                                   style: TextStyle(fontWeight: FontWeight.bold),

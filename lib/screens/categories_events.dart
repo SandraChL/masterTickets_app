@@ -14,10 +14,11 @@ import '../widgets/ticket_card.dart';
 
 List<TicketModel> mapZonesToTicketModels(TicketResponse response) {
   return response.data
-      .where((zone) =>
-          zone.arrayTickets.any(
-            (t) => !t.bought && !t.pulledApart,
-          ))
+      .where(
+        (zone) => zone.arrayTickets.any(
+          (t) => !t.bought && !t.pulledApart,
+        ),
+      )
       .map((zone) {
         final availableTickets = zone.arrayTickets
             .where((t) => !t.bought && !t.pulledApart)
@@ -31,12 +32,15 @@ List<TicketModel> mapZonesToTicketModels(TicketResponse response) {
           title: zone.nameZona.toUpperCase(),
           price: minPrice.toDouble(),
           image: 'assets/images/Category.png',
-          totaltickets:zone.arrayTickets.length,
+          totaltickets: zone.arrayTickets.length,
           description: zone.description ?? 'Acceso ${zone.nameZona}',
+          idzona: zone.idZona,
+          idticket: 0, // ✅ AQUÍ
         );
       })
       .toList();
 }
+
 
 
 
@@ -58,6 +62,8 @@ List<TicketModel> mapTicketsFromResponse(TicketResponse response) {
           image: 'assets/images/Category.png',
           totaltickets:zone.arrayTickets.length,
           description: zone.description ?? 'Acceso ${zone.nameZona}',
+          idzona:zone.idZona,
+          idticket:ticket.idTicket, 
         ),
       );
     }
@@ -236,6 +242,8 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                       : index;
                             });
                           },
+                          idzona:ticket.idzona ,
+                          idticket:ticket.idticket,
                         ),
                       );
                     },

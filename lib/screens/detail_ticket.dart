@@ -1,111 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/models/mytickets.dart';
 import 'package:master_tickets/screens/QrScreen.dart';
-import 'package:master_tickets/utils/encrypta.dart' show encryptQueryParams;
-import '../models/selected_event.dart';
-import '../utils/cart_item.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'dart:convert';
+import 'package:master_tickets/services/events_service.dart';
+import 'package:master_tickets/widgets/mytickets.dart';
 
 class EventSummaryPage extends StatelessWidget {
-  final List<CartItem> cartItems;
-  final String eventTitle;
-  final String eventDate;
-  final String eventLocation;
-  final String eventImage;
-  final String idventa;
+  const EventSummaryPage({super.key});
 
-  const EventSummaryPage({
-    super.key,
-    required this.cartItems,
-    required this.eventTitle,
-    required this.eventDate,
-    required this.eventLocation,
-    required this.eventImage,
-    required this.idventa,
-  });
+  void _goToQrScreen(BuildContext context, String qrData) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QrScreen(qrData: qrData),
+      ),
+    );
+  }
 
- void _goToQrScreen(BuildContext context) {
-  final encryptedData = encryptQueryParams(eventTitle, eventDate, eventLocation);
-
-  final qrData = 'https://workingdevsolutions.com/validationticket?idventa=$idventa';
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => QrScreen(qrData: qrData),
-    ),
-  );
-}
-
- 
   @override
   Widget build(BuildContext context) {
-    final fallbackEvent = selectedEvent;
+    /// 🔑 OBTENEMOS EL idTransaction DESDE NAVEGACIÓN
+    final String idventa =
+        ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Resumen del Evento')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network (
-               'https://workingdevsolutions.com/images/MasterT/B3.jpeg',
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              eventTitle.isNotEmpty
-                  ? eventTitle
-                  : fallbackEvent?.title ?? 'Sin título',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Fecha: ${eventDate.isNotEmpty ? eventDate : fallbackEvent?.date ?? ''}',
-            ),
-            Text(
-              'Ubicación: ${eventLocation.isNotEmpty ? eventLocation : fallbackEvent?.location ?? ''}',
-            ),
-            const Divider(height: 32),
-            const Text(
-              'Boletos Seleccionados',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            if (cartItems.isEmpty)
-              const Text('No hay boletos en el carrito.')
-            else
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: cartItems.length,
-                itemBuilder: (context, index) {
-                  final item = cartItems[index];
-                  return ListTile(
-                    leading: const Icon(Icons.confirmation_number),
-                    title: Text('${item.title} × ${item.quantity}'),
-                    trailing: Text(
-                      '\$${(item.price * item.quantity).toStringAsFixed(2)}',
-                    ),
-                  );
+      appBar: AppBar(title: const Text('Mis boletos')),
+      body: FutureBuilder<MyTicketsResponse>(
+        future: EventsService.getTickets(idTransaction: idventa),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || !snapshot.hasData) {
+            return const Center(child: Text('Error al cargar los boletos'));
+          }
+
+          final tickets = snapshot.data!.data;
+
+          if (tickets.isEmpty) {
+            return const Center(child: Text('No tienes boletos disponibles'));
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: tickets.length,
+            itemBuilder: (context, index) {
+              final ticket = tickets[index];
+
+              return MyTicketsCard(
+                ticket: ticket,
+                onQrPressed: () {
+                  final qrData = 'xxxxxxx/${ticket.idTicket}';
+                  _goToQrScreen(context, qrData);
                 },
-              ),
-            const SizedBox(height: 24),
-            Center(
-             child: ElevatedButton.icon(
-              onPressed: () => _goToQrScreen(context),
-              icon: const Icon(Icons.qr_code),
-              label: const Text('Mostrar QR'),
-            ),
-            ),
-          ],
-        ),
+              );
+            },
+          );
+        },
       ),
     );
   }

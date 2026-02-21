@@ -30,12 +30,12 @@ class OrderSummaryPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // ⛔ quita el botón regresar
         title: const Text(
           'Resumen del Pedido',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: AppColors.aRed,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

@@ -1,10 +1,41 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:master_tickets/models/eventos_modelo.dart';
+import 'package:master_tickets/models/mytickets.dart';
 import 'package:master_tickets/models/tickets.dart';
  
 
 class EventsService {
+
+
+
+
+static Future<Map<String, dynamic>> loginRequest({
+  required String password,
+}) async {
+  final url = Uri.parse('https://www.testunit00.co/testimonials/generatehash');
+
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'value': password
+    }),
+  );
+
+  debugPrint('STATUS: ${response.statusCode}');
+  debugPrint('BODY: ${response.body}');
+
+  final data = jsonDecode(response.body);
+
+  return {
+    //'statusCode': response.statusCode,
+    'hash': data['hash'],
+  };
+}
+
+
   static Future<String> _getBranchId() async {
     final response = await http.post(
       Uri.parse('https://auth.workingdevsolutions.com/auth/loginUsers'),
@@ -155,6 +186,30 @@ print('ids recibidos para buscar ');
         'Error al apartar ticket $idTicket: ${response.body}',
       );
     }
+  }
+
+
+
+    static Future<MyTicketsResponse> getTickets({
+    required String idTransaction,
+  }) async {
+          final token = await _getBranchId(); 
+    final url = Uri.parse('https://back.workingdevsolutions.com/happyPath/postFinalySale?token=$token');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'id_transaction': 999,
+      }),
+    );
+
+    debugPrint('STATUS: ${response.statusCode}');
+    debugPrint('BODY: ${response.body}');
+
+    final Map<String, dynamic> data = jsonDecode(response.body);
+
+    return MyTicketsResponse.fromJson(data);
   }
 
 }

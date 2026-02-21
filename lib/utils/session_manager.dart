@@ -7,6 +7,7 @@ class SessionManager {
   static const String _idEventoKey = 'id_evento';
   static const String _idTicketsKey = 'id_tickets';
   static const String _idTransactionKey = 'id_transaction';
+    static const String _idUsernameKey = 'id_username';
 
   // ================== LOGIN ==================
   static Future<void> setLoggedIn(bool value) async {
@@ -87,5 +88,17 @@ class SessionManager {
     if (isLoggedIn != null) {
       await prefs.setBool(_isLoggedInKey, isLoggedIn);
     }
+  }
+
+
+    // ================== name user session ==================
+  static Future<void> setUserName(String username) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_idUsernameKey, username);
+  }
+
+  static Future<String?> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_idUsernameKey);
   }
 }

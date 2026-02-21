@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/services/events_service.dart';
 import 'package:master_tickets/utils/session_manager.dart';
 import 'home_screen.dart';
 import 'dart:convert';
@@ -22,39 +23,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
-Future<Map<String, dynamic>> loginRequest({
-  required String password,
-}) async {
-  final url = Uri.parse('https://www.testunit00.co/testimonials/generatehash');
-
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      'value': password
-    }),
-  );
-
-  debugPrint('STATUS: ${response.statusCode}');
-  debugPrint('BODY: ${response.body}');
-
-  final data = jsonDecode(response.body);
-
-  return {
-    //'statusCode': response.statusCode,
-    'hash': data['hash'],
-  };
-}
 
 
   Future<void> _login(BuildContext context) async {
   final String username = _usernameController.text.trim();
   final String password = _passwordController.text.trim();
 
- 
 
-
-  final resulthash = await loginRequest(      password: password,    );
+  final resulthash = await EventsService.loginRequest(      password: password,    );
 
   //debugPrint(' resulthash  : ${resulthash['hash']}');
 
@@ -95,6 +71,10 @@ Future<Map<String, dynamic>> loginRequest({
       // 👇 ajusta según la respuesta real de tu backend
       if (data['status'] == 200) {
         await SessionManager.setLoggedIn(true);
+
+        await SessionManager.setUserName(data['username']);
+
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -135,7 +115,7 @@ void _showError(String message) {
     _passwordController.dispose();
     super.dispose();
   }
-
+bool _obscurePassword = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -273,32 +253,47 @@ void _showError(String message) {
     );
   }
 
-  Widget _buildTextField({
-    required String hint,
-    required IconData icon,
-    required TextEditingController controller,
-    bool isPassword = false,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.60),
-        borderRadius: BorderRadius.circular(30),
+Widget _buildTextField({
+  required String hint,
+  required IconData icon,
+  required TextEditingController controller,
+  bool isPassword = false,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.60),
+      borderRadius: BorderRadius.circular(30),
+    ),
+    child: TextField(
+      controller: controller,
+      obscureText: isPassword ? _obscurePassword : false,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.black),
+
+        /// 👁️ OJITO FUNCIONAL
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscurePassword
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              )
+            : null,
+
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.black),
+        border: InputBorder.none,
+        contentPadding: const EdgeInsets.symmetric(vertical: 15),
       ),
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: Colors.black),
-          suffixIcon: isPassword
-              ? const Icon(Icons.visibility_off, color: Colors.black)
-              : null,
-          hintText: hint,
-          hintStyle: const TextStyle(color: Colors.black),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15),
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 }

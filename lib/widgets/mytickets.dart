@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:master_tickets/models/mytickets.dart';
+import 'package:master_tickets/models/miseventoscomprados.dart' as purchased;
 
 class MyTicketsCard extends StatelessWidget {
-  final TicketData ticket;
+  final purchased.Ticket ticket;
   final VoidCallback onQrPressed;
 
   const MyTicketsCard({
@@ -13,8 +13,7 @@ class MyTicketsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// 🔑 true = ya fue escaneado → bloquear QR
-    final bool isScanned = ticket.scanapp == true;
+    final bool isScanned = ticket.scanapp;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12),
@@ -32,7 +31,7 @@ class MyTicketsCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          /// 🖼 Imagen del boleto
+          /// 🖼 Imagen
           if (ticket.imagen.isNotEmpty)
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
@@ -46,7 +45,6 @@ class MyTicketsCard extends StatelessWidget {
               ),
             ),
 
-          /// Parte superior
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -66,13 +64,11 @@ class MyTicketsCard extends StatelessWidget {
                         ),
                       ),
                       Text('Boleto #${ticket.idTicket}'),
-
-                      /// 📋 Características
-                      if (ticket.caracteristics != null)
+                      if (ticket.caracteristics.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
-                            ticket.caracteristics.toString(),
+                            ticket.caracteristics,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Colors.grey,
@@ -86,19 +82,13 @@ class MyTicketsCard extends StatelessWidget {
             ),
           ),
 
-          Divider(
-            color: Colors.grey.shade400,
-            thickness: 1,
-            height: 1,
-          ),
+          Divider(color: Colors.grey.shade400, height: 1),
 
-          /// Parte inferior
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                /// Estado del boleto
                 Text(
                   isScanned ? 'Escaneado' : 'Válido',
                   style: TextStyle(
@@ -106,8 +96,6 @@ class MyTicketsCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-
-                /// 🎯 SOLO mostrar QR si NO está escaneado
                 ElevatedButton.icon(
                   onPressed: isScanned ? null : onQrPressed,
                   icon: const Icon(Icons.qr_code),

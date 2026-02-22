@@ -55,6 +55,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
+
+    // 🔥 COMPLETAR TICKETS
+  Future<void> getUdateTransaccion({
+    required int idtransactions,
+    required int numtickets,
+    required int totalpricetickets,
+      required int idzona,
+  }) async {
+
+  await EventsService.getUdateTransaccion(
+        idtransactions: idtransactions,
+         numtickets: numtickets,
+        totalpricetickets: totalpricetickets,
+        idzona: idzona,
+      );
+      debugPrint(' Transaccion  terminadaa  => $idtransactions');
+  }
+
 Future<void> payWithStripe() async {
   setState(() => _isLoading = true);
 
@@ -92,15 +110,37 @@ Future<void> payWithStripe() async {
     // 4️⃣ Obtener sesión
     final idsTickets = await SessionManager.getIdTickets();
     final idTransaction = await SessionManager.getIdTransaction();
+    
+ 
+    final int idzona = await SessionManager.getIdZona() ?? 0;
+     
+final tickets = await SessionManager.getIdTickets();
+final int totalTickets = tickets.length;
+
+
 
     if (idsTickets.isEmpty || idTransaction == null) {
       throw Exception('No hay tickets o transacción válida');
     }
 
+
+    debugPrint('    --------- ');
+    debugPrint('     ');
+    debugPrint('_getBranchId  : ${idTransaction}');
+
+
     // 5️⃣ Marcar tickets como pagados
     await enviarTicketsPagados(
       idsTickets: idsTickets,
       idTransaction: idTransaction,
+    );
+
+
+        await getUdateTransaccion(
+      idtransactions: idTransaction,
+      numtickets: totalTickets,
+      totalpricetickets: (total * 100).toInt(),
+      idzona: idzona,
     );
 
     // 6️⃣ Limpiar sesión

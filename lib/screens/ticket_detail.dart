@@ -106,7 +106,7 @@ Future<void> enviarTicketsApartados({
   for (final idTicket in idsTickets) {
     await EventsService.apartarTicket(
       idTicket: idTicket,
-      idTransaction: idTransaction,
+//      idTransaction: idTransaction,
     );
 
     print('Ticket apartado correctamente => $idTicket');
@@ -135,11 +135,10 @@ Future<void> agregarAlCarrito() async {
 
 
   await SessionManager.setIdTickets(idsTickets);
-await SessionManager.setIdTransaction(999);
 
   await enviarTicketsApartados(
     idsTickets: idsTickets,
-    idTransaction: 999,
+   idTransaction: 99,
   );
 
 

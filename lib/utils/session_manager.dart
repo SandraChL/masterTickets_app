@@ -7,7 +7,12 @@ class SessionManager {
   static const String _idEventoKey = 'id_evento';
   static const String _idTicketsKey = 'id_tickets';
   static const String _idTransactionKey = 'id_transaction';
-    static const String _idUsernameKey = 'id_username';
+  static const String _idUsernameKey = 'id_username';
+  static const String _idUserSessionKey = 'UserSession';
+  static const String _idHashSessionKey = 'HashSession';
+  static const String _idTotalTicketsKey = 'TotalTickets';
+
+  
 
   // ================== LOGIN ==================
   static Future<void> setLoggedIn(bool value) async {
@@ -100,5 +105,40 @@ class SessionManager {
   static Future<String?> getUserName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_idUsernameKey);
+  }
+
+
+      // ==================   user session ==================
+  static Future<void> setUserSession(String usersession) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_idUserSessionKey, usersession);
+  }
+
+  static Future<String?> getUserSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_idUserSessionKey);
+  }
+
+      // ==================   hash paswword session ==================
+  static Future<void> setHashSession(String hash) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_idHashSessionKey, hash);
+  }
+
+  static Future<String?> getHashSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_idHashSessionKey);
+  }
+
+
+    // ================== totalcompradosboletos ==================
+  static Future<void> setTotalTickets(int totaltickets) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_idTotalTicketsKey, totaltickets);
+  }
+
+  static Future<int?> getTotalTickets() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_idTotalTicketsKey);
   }
 }

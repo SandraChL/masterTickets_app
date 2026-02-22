@@ -69,12 +69,13 @@ class _FeaturedEventsCarouselState extends State<FeaturedEventsCarousel> {
                            print('idstage builder');
                           print( event.idstage);
                             print('idEvento builder');
-
-
-                      
-
                           print(event.idevento);
 
+                        final transaction = await EventsService.getTransaccion(
+                            id_stage: event.idstage,
+                            id_event: event.idevento,
+                          );
+                          print(transaction);
                              
                              await SessionManager.setIdEvento(event.idevento);
                                       

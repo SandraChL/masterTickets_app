@@ -5,7 +5,6 @@ import 'home_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-
 void main() {
   runApp(const MaterialApp(home: LoginScreen()));
 }
@@ -21,93 +20,91 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-
-
-
-
   Future<void> _login(BuildContext context) async {
-  final String username = _usernameController.text.trim();
-  final String password = _passwordController.text.trim();
+    final String username = _usernameController.text.trim();
+    final String password = _passwordController.text.trim();
 
+    final resulthash = await EventsService.loginRequest(password: password);
 
-  final resulthash = await EventsService.loginRequest(      password: password,    );
+    //debugPrint(' resulthash  : ${resulthash['hash']}');
 
-  //debugPrint(' resulthash  : ${resulthash['hash']}');
-
-  if (username.isEmpty || password.isEmpty) {
-    _showError('Completa todos los campos');
-    return;
-  }
-
-  final url = Uri.parse('https://auth.workingdevsolutions.com/auth/loginUsers'); // 👈 tu endpoint
-
-  try {
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'userid': username,
-        'pwd': resulthash['hash'],
-      }),
-    );
-
-    // 🔍 VER STATUS CODE
-    //debugPrint('STATUS CODE: ${response.statusCode}');
-
-    // 🔍 VER BODY RAW
-    //debugPrint('RESPONSE BODY: ${response.body}');
-
-    // 🔍 DECODIFICAR JSON
-    //final data = jsonDecode(response.body);
-
-    // 🔍 VER JSON PARSEADO
-    //debugPrint('DATA PARSEADA: $data');
-
-    if (response.statusCode == 201) {
-      final data = jsonDecode(response.body);
-
-      // 👇 ajusta según la respuesta real de tu backend
-      if (data['status'] == 200) {
-        await SessionManager.setLoggedIn(true);
-
-        await SessionManager.setUserName(data['username']);
-
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      } else {
-        _showError(data['message'] ?? 'Credenciales inválidas');
-      }
-    } else {
-      _showError('Error del servidor (${response.statusCode})');
+    if (username.isEmpty || password.isEmpty) {
+      _showError('Completa todos los campos');
+      return;
     }
-  } catch (e) {
-    _showError('Error de conexión');
+
+    final url = Uri.parse(
+      'https://auth.workingdevsolutions.com/auth/loginUsers',
+    ); // 👈 tu endpoint
+
+    try {
+      await SessionManager.setUserSession(username);
+
+      await SessionManager.setHashSession(resulthash['hash']);
+      debugPrint('    --------- ');
+      debugPrint('     ');
+      debugPrint('RESPONSE BODY: ${username}');
+      debugPrint('RESPONSE BODY: ${resulthash['hash']}');
+      debugPrint('     ');
+      debugPrint('   -----------  ');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'userid': username, 'pwd': resulthash['hash']}),
+      );
+
+      // 🔍 VER STATUS CODE
+      //debugPrint('STATUS CODE: ${response.statusCode}');
+
+      // 🔍 VER BODY RAW
+      //debugPrint('RESPONSE BODY: ${response.body}');
+
+      // 🔍 DECODIFICAR JSON
+      //final data = jsonDecode(response.body);
+
+      // 🔍 VER JSON PARSEADO
+      //debugPrint('DATA PARSEADA: $data');
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+
+        // 👇 ajusta según la respuesta real de tu backend
+        if (data['status'] == 200) {
+          await SessionManager.setLoggedIn(true);
+
+          await SessionManager.setUserName(data['username']);
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+          );
+        } else {
+          _showError(data['message'] ?? 'Credenciales inválidas');
+        }
+      } else {
+        _showError('Error del servidor (${response.statusCode})');
+      }
+    } catch (e) {
+      _showError('Error de conexión');
+    }
   }
-}
 
-
-void _showError(String message) {
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      title: const Text('Error'),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('OK'),
-        ),
-      ],
-    ),
-  );
-}
-
-
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
 
   @override
   void dispose() {
@@ -115,7 +112,8 @@ void _showError(String message) {
     _passwordController.dispose();
     super.dispose();
   }
-bool _obscurePassword = true;
+
+  bool _obscurePassword = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,9 +127,7 @@ bool _obscurePassword = true;
                   fit: BoxFit.cover,
                 ),
               ),
-              Container(
-                color: Colors.black.withOpacity(0.3),
-              ),
+              Container(color: Colors.black.withOpacity(0.3)),
             ],
           ),
           Center(
@@ -199,8 +195,8 @@ bool _obscurePassword = true;
                           ),
                           child: TextButton(
                             onPressed: () {
-                                _login(context);
-                              },
+                              _login(context);
+                            },
                             // onPressed: () {
                             //   final username = _usernameController.text.trim();
                             //   final password = _passwordController.text.trim();
@@ -253,47 +249,48 @@ bool _obscurePassword = true;
     );
   }
 
-Widget _buildTextField({
-  required String hint,
-  required IconData icon,
-  required TextEditingController controller,
-  bool isPassword = false,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.60),
-      borderRadius: BorderRadius.circular(30),
-    ),
-    child: TextField(
-      controller: controller,
-      obscureText: isPassword ? _obscurePassword : false,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.black),
-
-        /// 👁️ OJITO FUNCIONAL
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
-              )
-            : null,
-
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.black),
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(vertical: 15),
+  Widget _buildTextField({
+    required String hint,
+    required IconData icon,
+    required TextEditingController controller,
+    bool isPassword = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.60),
+        borderRadius: BorderRadius.circular(30),
       ),
-    ),
-  );
-}
+      child: TextField(
+        controller: controller,
+        obscureText: isPassword ? _obscurePassword : false,
+        style: const TextStyle(color: Colors.black),
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: Colors.black),
+
+          /// 👁️ OJITO FUNCIONAL
+          suffixIcon:
+              isPassword
+                  ? IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  )
+                  : null,
+
+          hintText: hint,
+          hintStyle: const TextStyle(color: Colors.black),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+        ),
+      ),
+    );
+  }
 }

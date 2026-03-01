@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:master_tickets/models/admin_events.dart';
 import 'package:master_tickets/models/eventos_modelo.dart';
 import 'package:master_tickets/models/miseventoscomprados.dart' as purchased;
 import 'package:master_tickets/models/mytickets.dart';
@@ -33,14 +34,14 @@ class EventsService {
     };
   }
 
-  static Future<String> _getBranchId() async {
+  static Future<String> getBranchId() async {
     final usersession = await SessionManager.getUserSession();
 
     final hashsession = await SessionManager.getHashSession();
     debugPrint('    --------- ');
     debugPrint('     ');
-    debugPrint('_getBranchId  : ${usersession}');
-    debugPrint('_getBranchId   : ${hashsession}');
+    debugPrint('getBranchId  : ${usersession}');
+    debugPrint('getBranchId   : ${hashsession}');
     debugPrint('     ');
     debugPrint('   -----------  ');
 
@@ -68,7 +69,7 @@ class EventsService {
   }
 
   static Future<List<FeaturedEvent>> fetchFeaturedEvents() async {
-    final token = await _getBranchId(); // 👈 primero
+    final token = await getBranchId(); // 👈 primero
 
     final response = await http.post(
       Uri.parse(
@@ -101,7 +102,7 @@ class EventsService {
     print('idEvento');
     print(idEvento);
 
-    final token = await _getBranchId(); // 👈 primero
+    final token = await getBranchId(); // 👈 primero
 
     final response = await http.post(
       Uri.parse(
@@ -134,7 +135,7 @@ class EventsService {
   }) async {
 
        final idTransaction = await SessionManager.getIdTransaction();
-    final token = await _getBranchId();
+    final token = await getBranchId();
     final url = Uri.parse(
       'https://back.workingdevsolutions.com/happyPath/updateTicket?token=$token',
     );
@@ -162,7 +163,7 @@ class EventsService {
     required int idTicket,
     required int idTransaction,
   }) async {
-    final token = await _getBranchId();
+    final token = await getBranchId();
     final url = Uri.parse(
       'https://back.workingdevsolutions.com/happyPath/updateTicket?token=$token',
     );
@@ -189,7 +190,7 @@ class EventsService {
   static Future<MyTicketsResponse> getTicketsanterior({
     required String idTransaction,
   }) async {
-    final token = await _getBranchId();
+    final token = await getBranchId();
     final url = Uri.parse(
       'https://back.workingdevsolutions.com/happyPath/postFinalySale?token=$token',
     );
@@ -212,7 +213,7 @@ class EventsService {
   static Future<List<purchased.Ticket>> getTickets({
   required int idTransaction,
 }) async {
-  final token = await _getBranchId();
+  final token = await getBranchId();
   final url = Uri.parse('https://back.workingdevsolutions.com/crtTransactions/PurchasesPerUser');
 
   final response = await http.get(
@@ -238,7 +239,7 @@ class EventsService {
   static Future<List<purchased.Event>> getTicketsByUser({
     required String idTransaction,
   }) async {
-    final token = await _getBranchId();
+    final token = await getBranchId();
 
           debugPrint('getTicketsByUser: ${token}');
 
@@ -269,7 +270,7 @@ class EventsService {
     required int id_stage,
     required int id_event,
   }) async {
-    final token = await _getBranchId();
+    final token = await getBranchId();
     final url = Uri.parse(
       'https://back.workingdevsolutions.com/crtTransactions/CreatBuy',
     );
@@ -305,7 +306,7 @@ class EventsService {
     required int totalpricetickets,
       required int idzona,
   }) async {
-    final token = await _getBranchId();
+    final token = await getBranchId();
     final url = Uri.parse(
       'https://back.workingdevsolutions.com/crtTransactions/UptBuy',
     );
@@ -345,6 +346,24 @@ class EventsService {
       return MyTransaccionResponse.fromJson(data);
     } else {
       throw Exception('Error al obtener la transacción');
+    }
+  }
+
+
+    static Future<AdminEventsResponse> getAdminEvents() async {
+
+  final token = await getBranchId();
+    final response = await http.get(
+      Uri.parse('https://back.workingdevsolutions.com/happyPath/ActiveEventStatus'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return AdminEventsResponse.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Error al obtener eventos');
     }
   }
 

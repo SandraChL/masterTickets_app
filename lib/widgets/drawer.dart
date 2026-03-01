@@ -65,33 +65,33 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
 
-          /// 👤 TODOS LOS USUARIOS
-          ListTile(
-            leading: const Icon(Icons.backpack_outlined),
-            title: const Text('Tus Eventos'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SelectedEventPage()),
-              );
-            },
-          ),
+       /// 👤 SOLO USUARIOS NO ADMIN
+if (userName != 'Administrador Admin')
+  ListTile(
+    leading: const Icon(Icons.backpack_outlined),
+    title: const Text('Tus Eventos'),
+    onTap: () {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SelectedEventPage()),
+      );
+    },
+  ),
 
-          /// 🛡️ SOLO ADMIN
-          if (userName == 'Administrador Admin')
-            ListTile(
-              leading: const Icon(Icons.qr_code_scanner),
-              title: const Text('Scanear Tickets'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const QrScannerPage()),
-                );
-              },
-            ),
-
+/// 🛡️ SOLO ADMIN
+if (userName == 'Administrador Admin')
+  ListTile(
+    leading: const Icon(Icons.qr_code_scanner),
+    title: const Text('Scanear Tickets'),
+    onTap: () {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const QrScannerPage()),
+      );
+    },
+  ),
           /// 🚪 TODOS
           ListTile(
             leading: const Icon(Icons.logout),

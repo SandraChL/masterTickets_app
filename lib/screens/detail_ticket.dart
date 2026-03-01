@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:master_tickets/models/miseventoscomprados.dart' as purchased;
 import 'package:master_tickets/screens/QrScreen.dart';
 import 'package:master_tickets/services/events_service.dart';
+import 'package:master_tickets/utils/encrypta.dart';
 import 'package:master_tickets/widgets/mytickets.dart';
 
 
@@ -9,10 +10,11 @@ class EventSummaryPage extends StatelessWidget {
   const EventSummaryPage({super.key});
 
   void _goToQrScreen(BuildContext context, String qrData) {
+    final encryptedQr = CryptoHelper.encryptText(qrData);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => QrScreen(qrData: qrData),
+        builder: (_) => QrScreen(qrData: encryptedQr),
       ),
     );
   }
@@ -50,7 +52,7 @@ class EventSummaryPage extends StatelessWidget {
               return MyTicketsCard(
                 ticket: ticket,
                 onQrPressed: () {
-                  final qrData = 'xxxxxxx/${ticket.idTicket}';
+                  final qrData = '${ticket.idTicket}';
                   _goToQrScreen(context, qrData);
                 },
               );

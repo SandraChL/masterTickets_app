@@ -80,20 +80,18 @@ class SessionManager {
   }
 
   // ================== LIMPIAR SESIÓN (SIN BORRAR LOGIN) ==================
-  static Future<void> clearSession() async {
-    final prefs = await SharedPreferences.getInstance();
+// ================== LIMPIAR SESIÓN (SOLO IDS TEMPORALES) ==================
+static Future<void> clearSession() async {
+  final prefs = await SharedPreferences.getInstance();
 
-    // Guardar estado de login
-    final isLoggedIn = prefs.getBool(_isLoggedInKey);
+  await prefs.remove(_idZonaKey);
+  await prefs.remove(_idTicketKey);
+  await prefs.remove(_idEventoKey);
+  await prefs.remove(_idTransactionKey);
+    await prefs.remove(_idTicketsKey);
 
-    // Limpiar todo
-    await prefs.clear();
-
-    // Restaurar login
-    if (isLoggedIn != null) {
-      await prefs.setBool(_isLoggedInKey, isLoggedIn);
-    }
-  }
+  
+}
 
 
     // ================== name user session ==================

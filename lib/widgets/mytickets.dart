@@ -13,6 +13,10 @@ class MyTicketsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(
+      '🎟 Ticket ${ticket.idTicket} scanapp = ${ticket.scanapp} (${ticket.scanapp.runtimeType})',
+    );
+
     final bool isScanned = ticket.scanapp;
 
     return Container(
@@ -63,7 +67,7 @@ class MyTicketsCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text('Boleto #${ticket.idTicket}'),
+                     // Text('Boleto #${ticket.idTicket}'),
                       if (ticket.caracteristics.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 6),
@@ -87,19 +91,47 @@ class MyTicketsCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  isScanned ? 'Escaneado' : 'Válido',
-                  style: TextStyle(
-                    color: isScanned ? Colors.red : Colors.green,
-                    fontWeight: FontWeight.w600,
+                // 🟢 TEXTO DE ESTADO
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isScanned ? 'Boleto Validado' : 'Boleto Activo',
+                        style: TextStyle(
+                          color: isScanned ? Colors.red : Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isScanned
+                            ? 'Este boleto ya fue escaneado'
+                            : 'Disponible para acceso',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
+                const SizedBox(width: 12),
+
+                // 🔲 BOTÓN QR
                 ElevatedButton.icon(
                   onPressed: isScanned ? null : onQrPressed,
                   icon: const Icon(Icons.qr_code),
-                  label: const Text('Ver QR'),
+                  label: Text(isScanned ? 'Bloqueado' : 'Ver QR'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isScanned ? Colors.grey : Colors.blue,
+                  ),
                 ),
               ],
             ),

@@ -23,9 +23,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               );
             },
             child: Image.asset(
-              'assets/images/LogoSGF.jpeg',
-              height: 26,
-              //width: 90,
+              'assets/images/newbanner.png',
+              height: 350,
+              width: 250,
               fit: BoxFit.contain,
             ),
           ),

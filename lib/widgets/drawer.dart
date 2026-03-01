@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/screens/qrscaner.dart';
+import 'package:master_tickets/utils/session_manager.dart';
 import '../screens/event_List.dart';
 import '../screens/login.dart';
 
@@ -12,6 +14,20 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   bool showPersonalData = false;
   bool showEventCategories = false;
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final name = await SessionManager.getUserName();
+    setState(() {
+      userName = name;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +41,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
               fit: StackFit.expand,
               children: [
                 Image.asset("assets/images/WallUser.jpeg", fit: BoxFit.cover),
-                Container(
-                  // ignore: deprecated_member_use
-                  color: Colors.black.withOpacity(0.4),
-                ),
-
+                Container(color: Colors.black.withOpacity(0.4)),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.account_circle, size: 50, color: Colors.white),
-                    SizedBox(width: 12),
+                  children: [
+                    const Icon(
+                      Icons.account_circle,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 12),
                     Text(
-                      'User New',
-                      style: TextStyle(
+                      userName ?? '',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -49,59 +65,43 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
 
-          ListTile(
-            leading: const Icon(Icons.manage_accounts_outlined),
-            title: const Text('Administrar cuentas'),
-            trailing: Icon(
-              showPersonalData ? Icons.expand_less : Icons.expand_more,
-            ),
-            onTap: () {
-              setState(() {
-                showPersonalData = !showPersonalData;
-              });
-            },
-          ),
-          if (showPersonalData)
-            Padding(
-              padding: const EdgeInsets.only(left: 60.0),
-              child: ListTile(
-                leading: const Icon(Icons.person_outline),
-                title: const Text('Datos personales'),
-                onTap: () {
-                  Navigator.pop(context); // Cierra el drawer
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                    ),
-                    builder: (context) => const PersonalDataBottomSheet(),
-                  );
-                },
-              ),
-            ),
+       /// 👤 SOLO USUARIOS NO ADMIN
+if (userName != 'Administrador Admin')
+  ListTile(
+    leading: const Icon(Icons.backpack_outlined),
+    title: const Text('Tus Eventos'),
+    onTap: () {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SelectedEventPage()),
+      );
+    },
+  ),
 
-          ListTile(
-            leading: const Icon(Icons.backpack_outlined),
-            title: const Text('Tus Eventos'),
-            onTap: () {
-              Navigator.pop(context); // Cierra el Drawer
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SelectedEventPage()),
-              );
-            },
-          ),
-
+/// 🛡️ SOLO ADMIN
+if (userName == 'Administrador Admin')
+  ListTile(
+    leading: const Icon(Icons.qr_code_scanner),
+    title: const Text('Scanear Tickets'),
+    onTap: () {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const QrScannerPage()),
+      );
+    },
+  ),
+          /// 🚪 TODOS
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Finalizar la sesión'),
-            onTap: () {
+            onTap: () async {
+              await SessionManager.setLoggedIn(false);
+
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
                 (route) => false,
               );
             },

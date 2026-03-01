@@ -19,3 +19,15 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+subprojects {
+    plugins.withType<JavaPlugin> {
+        extensions.configure<JavaPluginExtension>("java") {
+            toolchain {
+                languageVersion.set(
+                    org.gradle.jvm.toolchain.JavaLanguageVersion.of(11)
+                )
+            }
+        }
+    }
+}

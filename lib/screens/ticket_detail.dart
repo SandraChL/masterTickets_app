@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/models/tickets.dart';
+import 'package:master_tickets/services/events_service.dart';
+import 'package:master_tickets/utils/session_manager.dart';
 import '../models/cart_notifier.dart';
 import '../utils/cart_item.dart';
 import '../utils/colors.dart';
@@ -12,13 +15,16 @@ class TicketDetailPage extends StatefulWidget {
   final double price;
   final String description;
   final String image;
+  final int totaltickets;
 
   const TicketDetailPage({
     super.key,
     required this.title,
     required this.price,
     required this.description,
-    required this.image, required String date,
+    required this.image, 
+    required this.totaltickets, 
+    required String date,
   });
 
   @override
@@ -26,8 +32,33 @@ class TicketDetailPage extends StatefulWidget {
 }
 
 class _TicketDetailPageState extends State<TicketDetailPage> {
+  late Future<TicketResponse> _ticketsFuture;
   int cantidad = 1;
   int cartItemCount = 0;
+  int? idTicket;
+  int? idZona;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSessionData();
+  }
+
+
+  Future<void> _loadSessionData() async {
+  final ticket = await SessionManager.getIdTicket();
+    final zona = await SessionManager.getIdZona();
+
+      setState(() {
+      idTicket = ticket;
+      idZona = zona;
+    });
+
+    print('❌ id ticket seleccionado: $ticket');
+    print('❌ zona seleccionada: $zona');
+  }
+
+
 
   void aumentarCantidad() {
     setState(() {
@@ -43,20 +74,126 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     }
   }
 
-  void agregarAlCarrito() {
-    cartNotifier.addItem(
-      CartItem(
-        title: widget.title,
-        price: widget.price,
-        quantity: cantidad,
-        image: widget.image,
-      ),
+
+Future<List<int>> obtenerIdsTickets({
+  required Future<TicketResponse> ticketsFuture,
+  required int? idZona,
+  required int cantidad,
+}) async {
+  final response = await ticketsFuture;
+
+  final zona = response.data.firstWhere(
+    (z) => z.idZona == idZona,
+    orElse: () => throw Exception('Zona no encontrada'),
+  );
+
+  if (zona.arrayTickets.length < cantidad) {
+    throw Exception('No hay suficientes boletos disponibles');
+  }
+
+  return zona.arrayTickets
+      .take(cantidad)
+      .map((t) => t.idTicket)
+      .toList();
+}
+
+
+
+Future<void> enviarTicketsApartados({
+  required List<int> idsTickets,
+  required int idTransaction,
+}) async {
+  for (final idTicket in idsTickets) {
+    await EventsService.apartarTicket(
+      idTicket: idTicket,
+//      idTransaction: idTransaction,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Añadiste $cantidad boleto(s) al carrito.')),
-    );
+    print('Ticket apartado correctamente => $idTicket');
   }
+}
+
+
+
+Future<void> agregarAlCarrito() async {
+  final idEvento = await SessionManager.getIdEvento();
+  if (idEvento == null) return;
+
+  _ticketsFuture = EventsService.fetchFeaturedTickets(
+    idStage: 123,
+    idEvento: idEvento,
+    maxTickets: 100,
+  );
+
+  final idsTickets = await obtenerIdsTickets(
+    ticketsFuture: _ticketsFuture,
+    idZona: idZona,
+    cantidad: cantidad,
+  );
+
+  print('IDs asignados: $idsTickets');
+
+
+  await SessionManager.setIdTickets(idsTickets);
+
+  await enviarTicketsApartados(
+    idsTickets: idsTickets,
+   idTransaction: 99,
+  );
+
+
+  cartNotifier.addItem(
+    CartItem(
+      title: widget.title,
+      price: widget.price,
+      quantity: cantidad,
+      image: widget.image,
+    //  ticketIds: idsTickets, // 👈 aquí
+    ),
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Añadiste $cantidad boleto(s) al carrito')),
+  );
+}
+
+
+
+
+Future<void> agregarAlCarrito2() async {
+  final idEvento = await SessionManager.getIdEvento();
+
+  if (idEvento == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No se pudo identificar el evento')),
+    );
+    return;
+  }
+
+  _ticketsFuture = EventsService.fetchFeaturedTickets(
+    idStage: 123,
+    idEvento: idEvento, // ✅ ahora es int
+    maxTickets: 100,
+  );
+
+  print('agregarAlCarrito => cantidad: $cantidad');
+  print('agregarAlCarrito => idZona: $idZona');
+  print('agregarAlCarrito => idTicket: $idTicket');
+
+  cartNotifier.addItem(
+    CartItem(
+      title: widget.title,
+      price: widget.price,
+      quantity: cantidad,
+      image: widget.image,
+    ),
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Añadiste boletos al carrito')),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +252,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                     ],
                   ),
                   const Divider(height: 32),
-                  const Text('461 disponibles', style: TextStyle(fontSize: 14)),
+                  Text('${widget.totaltickets} disponibles', style: TextStyle(fontSize: 14)),
                   const SizedBox(height: 12),
                   Row(
                     children: [

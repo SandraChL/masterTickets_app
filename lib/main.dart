@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:master_tickets/screens/home_screen.dart';
+import 'package:master_tickets/screens/qrscaner.dart';
 import 'models/cart.dart';
 import 'screens/checkout_screen.dart';
 import 'screens/login.dart';
 import 'widgets/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';  
+import 'package:flutter_stripe/flutter_stripe.dart';
 
-void main() {
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+
+print('ENV => ${dotenv.env}');
+print('STRIPE => ${dotenv.env['STRIPE_PUBLIC_KEY']}');
+
+   Stripe.publishableKey = dotenv.env['STRIPE_PUBLIC_KEY'] ?? '';
+  Stripe.merchantIdentifier = 'merchant.com.mastertickets'; // iOS
+  Stripe.urlScheme = 'flutterstripe'; // Android
+
+  await Stripe.instance.applySettings();
+
   runApp(const MyApp());
 }
 
@@ -22,7 +39,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
-        '/home': (context) => LoginScreen(),
+        '/home': (context) => HomeScreen(),
+        '/scan': (context) => QrScannerPage(),       
         '/checkout':
             (context) => CheckoutPage(
               cartItems: cart,

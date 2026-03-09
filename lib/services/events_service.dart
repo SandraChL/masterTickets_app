@@ -14,7 +14,7 @@ class EventsService {
     required String password,
   }) async {
     final url = Uri.parse(
-      'https://www.testunit00.co/testimonials/generatehash',
+      'https://testunit00.sportcentertravel.com.mx/testimonials/generatehash',
     );
 
     final response = await http.post(

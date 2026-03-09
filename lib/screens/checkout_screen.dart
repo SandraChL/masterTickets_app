@@ -79,7 +79,7 @@ Future<void> payWithStripe() async {
   try {
     // 1️⃣ Crear PaymentIntent en backend
     final response = await http.post(
-      Uri.parse('https://test.tukmein.com/api/create-payment-intent'),
+      Uri.parse('https://experience.tukmein.com/api/create-payment-intent'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'amount': (total * 100).toInt(),
